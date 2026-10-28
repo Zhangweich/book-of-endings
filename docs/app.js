@@ -1,11 +1,11 @@
-import {initI18n, t} from './i18n.js?v=0.5.6';
+import {initI18n, t, setLocale, getLocale, languages} from './i18n.js?v=0.5.8';
 await initI18n();
-import {nodeById, childrenOf, ancestors, branchOf, questionsFor, nodes, questionById, firstQuestion} from './framework.js?v=0.5.6';
-import {createJourney} from './journey.js?v=0.5.6';
-import {renderTree} from './tree.js?v=0.5.6';
-import {illustration} from './art.js?v=0.5.6';
-import {createStore} from './store.js?v=0.5.6';
-import {backend} from './config.js?v=0.5.6';
+import {nodeById, childrenOf, ancestors, branchOf, questionsFor, nodes, questionById, firstQuestion} from './framework.js?v=0.5.8';
+import {createJourney} from './journey.js?v=0.5.8';
+import {renderTree} from './tree.js?v=0.5.8';
+import {illustration} from './art.js?v=0.5.8';
+import {createStore} from './store.js?v=0.5.8';
+import {backend} from './config.js?v=0.5.8';
 
 const $ = id => document.getElementById(id);
 const el = (tag, cls = '', text) => {
@@ -161,6 +161,15 @@ function leaveIntro(answers, stop, options) {
 function renderIntro() {
   const q = questionById[firstQuestion];
   const body = $('intro-body');
+  const lang = el('div', 'intro-lang');
+  lang.setAttribute('aria-label', 'Language / 语言');
+  for (const l of languages) {
+    const b = el('button', `chip${l.code === getLocale() ? ' solid' : ''}`, l.name);
+    b.type = 'button'; b.lang = l.tag;
+    b.setAttribute('aria-pressed', String(l.code === getLocale()));
+    b.addEventListener('click', () => setLocale(l.code));
+    lang.append(b);
+  }
   const chips = el('div', 'chip-row');
   chips.append(el('span', 'chip solid', t('开始选择')), el('span', 'chip', t('问题 {0}', 1)));
   const title = el('h2', 'intro-question', t(q.prompt));
@@ -184,7 +193,7 @@ function renderIntro() {
   const later = el('button', 'text-button intro-later', t('先随便看看'));
   later.type = 'button';
   later.addEventListener('click', () => $('intro').close());
-  body.replaceChildren(chips, title, el('p', 'question-help', t(q.help)), options, more, later);
+  body.replaceChildren(lang, chips, title, el('p', 'question-help', t(q.help)), options, more, later);
 }
 $('intro').addEventListener('click', e => { if (e.target === $('intro')) $('intro').close(); });
 

@@ -1,4 +1,4 @@
-import {assess, frameworkVersion} from './framework.js?v=0.5.6';
+import {assess, frameworkVersion} from './framework.js?v=0.5.8';
 
 // Keeps a person's choices on their device and sends their latest set to the counting service.
 // The service counts only each participant's most recent submission; emails are never read back.

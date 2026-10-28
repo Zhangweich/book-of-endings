@@ -1,7 +1,7 @@
-import {nodeById, assess, journeyRecord, journeyMarkdown, pathTitles, branchOf} from './framework.js?v=0.5.6';
-import {renderTree, treeLegend} from './tree.js?v=0.5.6';
-import {illustration} from './art.js?v=0.5.6';
-import {t, getLocale, localeTag} from './i18n.js?v=0.5.6';
+import {nodeById, assess, journeyRecord, journeyMarkdown, pathTitles, branchOf} from './framework.js?v=0.5.8';
+import {renderTree, treeLegend} from './tree.js?v=0.5.8';
+import {illustration} from './art.js?v=0.5.8';
+import {t, getLocale, localeTag} from './i18n.js?v=0.5.8';
 
 const tones = {steady: 'tone-steady', extinct: 'tone-extinct', changing: 'tone-changing'};
 

@@ -1,4 +1,4 @@
-import {nodeById, childrenOf} from './framework.js?v=0.5.6';
+import {nodeById, childrenOf} from './framework.js?v=0.5.8';
 
 // Renders the framework as a nested list. `states` maps node id -> chosen | open | dim;
 // without states every node is shown neutrally. A proposal is author text and is never translated.
