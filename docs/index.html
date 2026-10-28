@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="终局之书：用你的假设，走出人类未来的一棵树。">
+  <meta name="theme-color" content="#f1eee6"><title>终局之书</title>
+  <link rel="icon" href="./mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Noto+Serif+SC:wght@400&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="./style.css?v=0.5.6">
+  <script type="module" src="./app.js?v=0.5.6"></script>
+</head>
+<body>
+<a class="skip" href="#main">跳至正文</a>
+<header class="site-header">
+  <div class="header-top">
+    <a class="logo" href="#home"><img src="./mark.svg" alt="" width="46" height="46"><span class="logo-text"><span>终局</span><span>之书</span></span></a>
+  </div>
+  <nav class="header-bar" aria-label="主导航">
+    <div class="bar-left"><a href="#start" data-nav="start">开始选择</a><span aria-hidden="true">|</span><a href="#tree" data-nav="tree">全部分支</a><span aria-hidden="true">|</span><a href="#rules" data-nav="rules">共同规则</a><span aria-hidden="true">|</span></div>
+    <div class="bar-right"><label class="lang-picker" data-no-i18n><span class="lang-label">Language</span><select id="language-select" aria-label="Language / 语言"></select></label><a class="bar-cta" href="#start">开始 →</a></div>
+  </nav>
+</header>
+<main id="main" tabindex="-1">
+<section id="view-home" class="view">
+  <div class="wrap">
+    <article class="spotlight hero">
+      <div id="hero-art" class="hero-art"></div>
+      <div class="spotlight-card tone-hero">
+        <p class="card-kicker">人类的可能终局与分支 · 1—5 个世纪</p>
+        <h1 class="card-title">我们比之前的任何时刻都更接近终局时刻。</h1>
+        <div class="card-row vision">
+          <p class="vision-lead"><span class="chip solid">愿景</span>我们希望《终局之书》成为一场众包的、关于人类终局的讨论：一本永远无法写完、由所有人共同编写的书。</p>
+          <ul class="vision-points">
+            <li>每个人都可以 fork 这本书，写出自己的版本。</li>
+            <li>每一次投票和选择都应该被计数。</li>
+            <li>每个人都可以修改自己的选择，添加自己的选项。</li>
+            <li>贡献者可以留下昵称和邮箱。</li>
+          </ul>
+        </div>
+        <a class="card-row card-link" href="#start">从第一个问题开始 →</a>
+      </div>
+    </article>
+  </div>
+  <div class="issue-bar"><div class="wrap"><span class="chip solid">三种去向</span><span>稳态</span><span aria-hidden="true">|</span><span>消亡</span><span aria-hidden="true">|</span><span>变化态</span><span aria-hidden="true">|</span><span>1—5 个世纪</span></div></div>
+  <div id="branch-sections" class="wrap branches" data-no-i18n></div>
+  <section class="how wrap" aria-labelledby="how-title">
+    <h2 id="how-title" class="how-title">怎样参与</h2>
+    <ol class="how-steps">
+      <li><span class="chip">01</span><h3>从最大的问题开始</h3><p>人类是否还存在？有没有掌权者？每一步只需点一个按钮。</p></li>
+      <li><span class="chip">02</span><h3>不确定就停下</h3><p>停下的地方，下面的分支保持开放。列表里没有你的答案，就添加你自己的选项。</p></li>
+      <li><span class="chip">03</span><h3>提交，并随时修改</h3><p>提交你的选择，可以留下昵称和邮箱。之后随时回来修改，只计入你最新的一份。</p></li>
+    </ol>
+    <p class="editor-note"><span class="chip solid">编者按</span>各节点的说明是初稿，欢迎提出修改。</p>
+  </section>
+</section>
+<section id="view-start" class="view" hidden><div id="journey-root" class="wrap"></div></section>
+<section id="view-tree" class="view" hidden>
+  <div class="wrap">
+    <header class="page-head"><div class="chip-row"><span class="chip solid">全部分支</span></div><h1 tabindex="-1">人类的可能终局与分支</h1><p class="page-dek">这是全部分支。点开任一节点，阅读它的说明和值得追问的问题。</p></header>
+    <div id="full-tree" class="tree-panel"></div>
+    <p class="tree-cta"><a class="btn solid" href="#start">用你的假设走一遍 →</a></p>
+  </div>
+</section>
+<section id="view-node" class="view" hidden><div id="node-root" class="wrap" data-no-i18n></div></section>
+<section id="view-rules" class="view" hidden><div class="rules wrap">
+  <header class="rules-title"><div class="chip-row"><span class="chip solid">共同规则</span></div><h1 tabindex="-1">共同写作，<br>也共同承担。</h1><p>尚未经社区表决批准</p></header>
+  <article class="rules-body">
+    <section><span class="chip">01 / 署名负责</span><h2>每次表达，都有一个负责的人。</h2><p>可以使用真实姓名或持续化名，无须公开法定身份。最终提案、论证与表态由提出者本人审阅并负责。当前的分支框架与各节点说明尚无社区认可，不能冒充已经达成的共识。</p></section>
+    <section><span class="chip">02 / 论证先于票数</span><h2>分清三个不同的问题。</h2><div class="three-questions"><p><b>什么可能发生？</b><span>讨论条件、机制和证据。</span></p><p><b>我们希望什么发生？</b><span>说明价值选择和受影响的人。</span></p><p><b>共同版本收录什么？</b><span>按公开程序决定怎样编辑。</span></p></div><p>表决是编辑与治理的一部分，不会把一种叙事变成事实。账户投票不等于唯一自然人投票；当前方案未实现一人一票。</p></section>
+    <section><span class="chip">03 / 透明审议</span><h2>把过程和理由一起留下。</h2><ol class="governance-flow"><li><b>提出修改</b><span>署名、修改前后内容、证据和反对意见。</span></li><li><b>公开讨论 · 至少 7 天</b><span>实质修改补全材料后开始；治理流程修订至少讨论 14 天。</span></li><li><b>冻结版本并表态 · 至少 72 小时</b><span>指定完整 commit、规则版本和 UTC 时段；以附理由的公开评论记录支持、反对或弃权。</span></li><li><b>公开结算与纠错 · 至少 48 小时</b><span>一般实质修改需至少 3 个有效非提案者账号参与，支持占支持与反对合计至少三分之二；弃权不进入支持比例。可能改变结果的争议必须先解决。</span></li><li><b>执行或继续分叉</b><span>维护者按决议执行并保留少数意见；未达门槛保持待议，不自动批准。</span></li></ol><p class="micro">规则由维护者人工执行，模板不自动计票。Discussions Poll 与 emoji 仅作非正式反馈。初版网站是发起人提供的讨论起点，不计作社区表决通过。</p></section>
+    <section><span class="chip">04 / 保留异议</span><h2>不必赢得多数，才值得被保存。</h2><p>善意的反对理由、未通过提案和替代路径应保留原始链接与版本。共同版本需记录少数意见，独立 Fork 可以继续发展。作者不应被他人代为宣布“异议已解决”。</p><p>骚扰、威胁及隐私泄露不受此保护；处理违规时应留下不再次暴露隐私的理由和可行申诉路径。平等参与、隐私与少数意见保护不能由一次简单多数表决直接取消。</p></section>
+    <section><span class="chip">05 / 开放与可修订</span><h2>这本书，也包括它的规则。</h2><p>初始维护者仍拥有技术管理权限，Git 历史也不是绝对不可更改的档案。独立保存、公开记录与多方维护，是减少对单个人依赖的起点。</p><p>当前没有真实社区提案、选票或独立分叉。</p></section>
+  </article>
+</div></section>
+<noscript><div class="wrap"><h1>终局之书</h1><p>选择与阅读需要 JavaScript。</p></div></noscript>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><a class="logo" href="#home"><img src="./mark.svg" alt="" width="36" height="36"><span class="logo-text"><span>终局</span><span>之书</span></span></a><p>未来可以被讨论。分歧可以被保留。</p><a href="#rules">共同规则 →</a></div></footer>
+<div id="toast" class="toast" role="status" hidden></div>
+<dialog id="intro" class="intro" aria-labelledby="intro-title"><div id="intro-body" data-no-i18n></div></dialog>
+</body>
+</html>

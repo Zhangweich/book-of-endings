@@ -1,0 +1,4 @@
+name = "book-of-endings-relay"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+routes = [{ pattern = "endings-api.weichenzhang.com", custom_domain = true }]
