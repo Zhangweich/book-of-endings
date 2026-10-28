@@ -1,4 +1,4 @@
-import {assess, frameworkVersion} from './framework.js?v=0.5.8';
+import {assess, frameworkVersion, nodeById} from './framework.js?v=0.5.10';
 
 // Keeps a person's choices on their device and sends their latest set to the counting service.
 // The service counts only each participant's most recent submission; emails are never read back.
@@ -49,6 +49,19 @@ export function summarizeCounts(rows, totalRows) {
     questions[row.question] = (questions[row.question] || 0) + n;
   }
   return {status: 'ok', people: Number(totalRows?.[0]?.people) || 0, options, questions};
+}
+
+// Approved paths added by visitors. Only rows the initiator approved exist on the server; this keeps
+// what is shown bounded and attached to a real node of the tree.
+export function cleanPaths(rows) {
+  return (Array.isArray(rows) ? rows : [])
+    .filter(r => r && Number.isInteger(r.id) && typeof r.at === 'string' && nodeById[r.at] && typeof r.label === 'string' && r.label.trim())
+    .map(r => ({
+      id: r.id, at: r.at, label: r.label.trim().slice(0, 120),
+      labelEn: typeof r.label_en === 'string' ? r.label_en.trim().slice(0, 160) : '',
+      note: typeof r.note === 'string' ? r.note.trim().slice(0, 2000) : '',
+      contributors: Array.isArray(r.contributors) ? r.contributors.filter(c => typeof c === 'string' && c.trim()).map(c => c.trim().slice(0, 40)) : []
+    }));
 }
 
 export function createStore({storage = deviceStorage(), fetch = globalThis.fetch?.bind(globalThis), backend = null, timeout = 6000} = {}) {
@@ -104,5 +117,12 @@ export function createStore({storage = deviceStorage(), fetch = globalThis.fetch
       return summarizeCounts(await rows.json(), await total.json());
     } catch { return {status: 'error'}; }
   }
-  return {me: () => me, save, submit, counts, online: Boolean(backend)};
+  async function paths() {
+    if (!backend || !fetch) return [];
+    try {
+      const res = await request('community_paths?select=id,at,label,label_en,note,contributors&order=approved_at.asc');
+      return res.ok ? cleanPaths(await res.json()) : [];
+    } catch { return []; }
+  }
+  return {me: () => me, save, submit, counts, paths, online: Boolean(backend)};
 }

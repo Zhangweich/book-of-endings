@@ -1,7 +1,7 @@
 // Forwards the site's counting requests to Supabase, whose own domain is blocked in mainland China.
-// Only the three requests the site makes are allowed; everything else is refused.
+// Only the requests the site makes are allowed; everything else is refused.
 const UPSTREAM = 'https://bozfultqxellehhtefga.supabase.co';
-const ALLOWED = new Set(['POST /rest/v1/submissions', 'GET /rest/v1/choice_counts', 'GET /rest/v1/participant_total']);
+const ALLOWED = new Set(['POST /rest/v1/submissions', 'GET /rest/v1/choice_counts', 'GET /rest/v1/participant_total', 'GET /rest/v1/community_paths']);
 const ORIGINS = ['https://endings.weichenzhang.com', 'http://127.0.0.1:8769', 'http://localhost:8000'];
 const FORWARDED = ['apikey', 'authorization', 'content-type', 'prefer'];
 const MAX_BODY = 20000;

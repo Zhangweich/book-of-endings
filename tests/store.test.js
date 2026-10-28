@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createStore, memoryStorage, validateContact, submissionPayload, summarizeCounts} from '../docs/store.js';
+import {createStore, memoryStorage, validateContact, submissionPayload, summarizeCounts, cleanPaths} from '../docs/store.js';
 
 const backend = {url: 'https://example.supabase.co/', anonKey: 'public-anon-key'};
 const choices = [{question: 'exist', option: 'yes'}, {question: 'ruler', option: 'no'}, {question: 'settled', option: 'stable'}];
@@ -85,4 +85,32 @@ test('counts add up per question, including stops, and ignore malformed rows', (
   assert.equal(c.questions.exist, 10);
   assert.equal(c.options['ruler:+uncertain'], 2);
   assert.equal(Object.keys(c.options).length, 3);
+});
+
+test('only well-formed approved paths attached to real nodes are shown', () => {
+  const rows = [
+    {id: 1, at: 'machine', label: ' 企业统治 ', label_en: 'Corporate rule', note: '', contributors: ['远方', '', 7]},
+    {id: 2, at: 'nowhere', label: 'x', contributors: []},
+    {id: '3', at: 'root', label: 'y'},
+    {id: 4, at: 'root', label: '  '},
+    {id: 5, at: 'changing', label: '<b>literal</b>', contributors: 'not a list'}
+  ];
+  const out = cleanPaths(rows);
+  assert.deepEqual(out.map(p => p.id), [1, 5]);
+  assert.equal(out[0].label, '企业统治');
+  assert.deepEqual(out[0].contributors, ['远方']);
+  assert.equal(out[1].label, '<b>literal</b>');
+  assert.deepEqual(out[1].contributors, []);
+  assert.deepEqual(cleanPaths(null), []);
+});
+
+test('approved paths are read through the service and never fail the page', async () => {
+  const offline = createStore({storage: memoryStorage()});
+  assert.deepEqual(await offline.paths(), []);
+  const calls = [];
+  const ok = createStore({storage: memoryStorage(), backend, fetch: async url => { calls.push(url); return {ok: true, json: async () => [{id: 1, at: 'pet', label: '数字宠物', contributors: ['a']}]}; }});
+  assert.equal((await ok.paths())[0].label, '数字宠物');
+  assert.match(calls[0], /\/rest\/v1\/community_paths\?select=id,at,label,label_en,note,contributors/);
+  const down = createStore({storage: memoryStorage(), backend, fetch: async () => { throw new Error('blocked'); }});
+  assert.deepEqual(await down.paths(), []);
 });

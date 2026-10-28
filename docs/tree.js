@@ -1,8 +1,8 @@
-import {nodeById, childrenOf} from './framework.js?v=0.5.8';
+import {nodeById, childrenOf} from './framework.js?v=0.5.10';
 
 // Renders the framework as a nested list. `states` maps node id -> chosen | open | dim;
-// without states every node is shown neutrally. A proposal is author text and is never translated.
-export function renderTree({t, states = null, proposal = null, focus = null, compact = false}) {
+// without states every node is shown neutrally. Proposals and community paths are author text and are never translated.
+export function renderTree({t, states = null, proposal = null, focus = null, compact = false, community = []}) {
   const wrap = document.createElement('div');
   wrap.className = `tree${compact ? ' compact' : ''}`;
   wrap.setAttribute('data-no-i18n', '');
@@ -33,6 +33,15 @@ export function renderTree({t, states = null, proposal = null, focus = null, com
       note.textContent = t(n.note);
       extra.push(note);
     }
+    for (const c of community.filter(c => c.at === id)) {
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.className = 'tree-node is-community';
+      span.textContent = c.label;
+      li.append(span);
+      if (!compact) li.append(Object.assign(document.createElement('span'), {className: 'tree-by', textContent: t('提出：{0}', contributorsText(c, t))}));
+      extra.push(li);
+    }
     if (proposal?.at === id) {
       const p = document.createElement('li');
       const span = document.createElement('span');
@@ -56,10 +65,16 @@ export function renderTree({t, states = null, proposal = null, focus = null, com
   return wrap;
 }
 
-export function treeLegend(t) {
+export function contributorsText(path, t) {
+  return path.contributors.length ? path.contributors.join(t('、')) : t('匿名贡献者');
+}
+
+export function treeLegend(t, {community = false} = {}) {
   const p = document.createElement('p');
   p.className = 'tree-legend';
-  for (const [cls, text] of [['is-chosen', '你的路径'], ['is-open', '仍然开放'], ['is-dim', '已排除'], ['is-proposal', '你提出的新分支']]) {
+  const items = [['is-chosen', '你的路径'], ['is-open', '仍然开放'], ['is-dim', '已排除'], ['is-proposal', '你提出的新分支']];
+  if (community) items.push(['is-community', '社区线路']);
+  for (const [cls, text] of items) {
     const item = document.createElement('span');
     const swatch = document.createElement('i');
     swatch.className = `tree-node ${cls}`;

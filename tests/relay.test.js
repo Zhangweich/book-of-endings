@@ -15,7 +15,7 @@ function withUpstream(fn) {
   return fn(calls).finally(() => { globalThis.fetch = original; });
 }
 
-test('the site’s three requests are forwarded with their headers and body', () => withUpstream(async calls => {
+test('the site’s requests are forwarded with their headers and body', () => withUpstream(async calls => {
   const post = await relay.fetch(new Request(`${api}/rest/v1/submissions`, {
     method: 'POST', body: '{"a":1}',
     headers: {origin: site, apikey: 'k', authorization: 'Bearer k', 'content-type': 'application/json', prefer: 'return=minimal', cookie: 'secret=1'}
@@ -32,11 +32,13 @@ test('the site’s three requests are forwarded with their headers and body', ()
   assert.equal(calls[1].url, 'https://bozfultqxellehhtefga.supabase.co/rest/v1/choice_counts?select=question,option,people');
   assert.deepEqual(await counts.json(), [{people: 3}]);
   await relay.fetch(new Request(`${api}/rest/v1/participant_total?select=people`));
-  assert.equal(calls.length, 3);
+  await relay.fetch(new Request(`${api}/rest/v1/community_paths?select=id,label`));
+  assert.equal(calls[3].url, 'https://bozfultqxellehhtefga.supabase.co/rest/v1/community_paths?select=id,label');
+  assert.equal(calls.length, 4);
 }));
 
 test('anything else is refused without reaching the database', () => withUpstream(async calls => {
-  for (const [method, path] of [['GET', '/rest/v1/submissions'], ['DELETE', '/rest/v1/submissions'], ['POST', '/rest/v1/rpc/anything'], ['GET', '/auth/v1/user'], ['GET', '/']]) {
+  for (const [method, path] of [['GET', '/rest/v1/submissions'], ['DELETE', '/rest/v1/submissions'], ['POST', '/rest/v1/rpc/anything'], ['POST', '/rest/v1/community_paths'], ['GET', '/rest/v1/proposals_for_review'], ['GET', '/auth/v1/user'], ['GET', '/']]) {
     const res = await relay.fetch(new Request(`${api}${path}`, {method}));
     assert.equal(res.status, 404, `${method} ${path}`);
   }

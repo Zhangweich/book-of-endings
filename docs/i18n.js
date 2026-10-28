@@ -1,6 +1,6 @@
-import {languages,resolveLocale,formatMessage,sourceIndex} from './locale-core.js?v=0.5.8';
+import {languages,resolveLocale,formatMessage,sourceIndex} from './locale-core.js?v=0.5.10';
 export {languages};
-const version='0.5.8';
+const version='0.5.10';
 let locale='zh', base={}, translated={}, index=new Map();
 const cache=new Map();
 const textSources=new WeakMap(), attributeSources=new WeakMap();

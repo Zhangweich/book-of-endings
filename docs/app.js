@@ -1,11 +1,11 @@
-import {initI18n, t, setLocale, getLocale, languages} from './i18n.js?v=0.5.8';
+import {initI18n, t, setLocale, getLocale, languages} from './i18n.js?v=0.5.10';
 await initI18n();
-import {nodeById, childrenOf, ancestors, branchOf, questionsFor, nodes, questionById, firstQuestion} from './framework.js?v=0.5.8';
-import {createJourney} from './journey.js?v=0.5.8';
-import {renderTree} from './tree.js?v=0.5.8';
-import {illustration} from './art.js?v=0.5.8';
-import {createStore} from './store.js?v=0.5.8';
-import {backend} from './config.js?v=0.5.8';
+import {nodeById, childrenOf, ancestors, branchOf, questionsFor, nodes, questionById, firstQuestion} from './framework.js?v=0.5.10';
+import {createJourney} from './journey.js?v=0.5.10';
+import {renderTree, contributorsText} from './tree.js?v=0.5.10';
+import {illustration} from './art.js?v=0.5.10';
+import {createStore} from './store.js?v=0.5.10';
+import {backend} from './config.js?v=0.5.10';
 
 const $ = id => document.getElementById(id);
 const el = (tag, cls = '', text) => {
@@ -88,6 +88,7 @@ function renderNode(id) {
   h1.tabIndex = -1;
   head.append(crumbs, chips, h1);
   if (n.summary) head.append(el('p', 'node-summary', t(n.summary)));
+  head.append(el('p', 'node-by', t('提出：{0}', t('发起人'))));
 
   const body = el('div', 'node-body');
   const main = el('div', 'node-main');
@@ -105,6 +106,18 @@ function renderNode(id) {
     next.append(el('h2', 'section-title', t('下一层')), cards);
     main.append(next);
   }
+  const added = communityView().filter(c => c.at === id);
+  if (added.length) {
+    const section = el('section', 'community-paths');
+    section.append(el('h2', 'section-title', t('社区添加的线路')));
+    for (const c of added) {
+      const item = el('article', 'community-path');
+      item.append(el('h3', '', c.label), el('p', 'node-by', t('提出：{0}', contributorsText(c, t))));
+      if (c.note) item.append(el('p', 'community-note', c.note));
+      section.append(item);
+    }
+    main.append(section);
+  }
   const flow = el('section', 'in-flow');
   flow.append(el('h2', 'section-title', t('在选择流程中')));
   const q = questionsFor(id)[0];
@@ -118,7 +131,7 @@ function renderNode(id) {
   const aside = el('aside', 'node-aside');
   const path = [...ancestors(id), id];
   const states = Object.fromEntries(nodes.map(x => [x.id, path.includes(x.id) ? 'chosen' : 'open']));
-  aside.append(el('h2', 'section-title', t('在整棵树中的位置')), renderTree({t, states, focus: id, compact: true}));
+  aside.append(el('h2', 'section-title', t('在整棵树中的位置')), renderTree({t, states, focus: id, compact: true, community: communityView()}));
   body.append(main, aside);
   root.append(head, body);
 
@@ -132,7 +145,11 @@ function renderNode(id) {
   }
 }
 
-const journey = createJourney({root: $('journey-root'), download, store: createStore({backend})});
+// Paths added by visitors appear only after the initiator approves them on the server.
+const store = createStore({backend});
+let community = [];
+const communityView = () => community.map(c => ({...c, label: getLocale() === 'en' && c.labelEn ? c.labelEn : c.label}));
+const journey = createJourney({root: $('journey-root'), download, store, community: communityView});
 const views = ['home', 'start', 'tree', 'node', 'rules'];
 function route() {
   const [name, arg] = location.hash.slice(1).split('/');
@@ -199,13 +216,21 @@ $('intro').addEventListener('click', e => { if (e.target === $('intro')) $('intr
 
 function renderAll() {
   renderHome();
-  $('full-tree').replaceChildren(renderTree({t}));
+  $('full-tree').replaceChildren(renderTree({t, community: communityView()}));
   route();
   if ($('intro').open) renderIntro();
 }
 window.addEventListener('hashchange', route);
 window.addEventListener('book-language-change', renderAll);
 renderAll();
+store.paths().then(rows => {
+  if (!rows.length) return;
+  community = rows;
+  $('full-tree').replaceChildren(renderTree({t, community: communityView()}));
+  const [name, arg] = location.hash.slice(1).split('/');
+  if (name === 'node' && nodeById[arg] && arg !== 'root') renderNode(arg);
+  if (name === 'start') journey.render();
+});
 if (!introSeen() && (!location.hash || location.hash === '#home')) {
   markIntroSeen();
   renderIntro();

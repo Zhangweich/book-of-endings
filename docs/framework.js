@@ -1,6 +1,6 @@
 // Framework 1.0: the initiator's tree of possible endings and the top-down question flow.
 // Every node and answer is an arguable assumption; nothing here is a probability or forecast.
-import {formatMessage} from './locale-core.js?v=0.5.8';
+import {formatMessage} from './locale-core.js?v=0.5.10';
 export const frameworkVersion = '1.0';
 export const siteVersion = '0.5';
 

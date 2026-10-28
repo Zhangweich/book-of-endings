@@ -1,11 +1,11 @@
-import {nodeById, assess, journeyRecord, journeyMarkdown, pathTitles, branchOf} from './framework.js?v=0.5.8';
-import {renderTree, treeLegend} from './tree.js?v=0.5.8';
-import {illustration} from './art.js?v=0.5.8';
-import {t, getLocale, localeTag} from './i18n.js?v=0.5.8';
+import {nodeById, assess, journeyRecord, journeyMarkdown, pathTitles, branchOf} from './framework.js?v=0.5.10';
+import {renderTree, treeLegend} from './tree.js?v=0.5.10';
+import {illustration} from './art.js?v=0.5.10';
+import {t, getLocale, localeTag} from './i18n.js?v=0.5.10';
 
 const tones = {steady: 'tone-steady', extinct: 'tone-extinct', changing: 'tone-changing'};
 
-export function createJourney({root, download, store}) {
+export function createJourney({root, download, store, community = () => []}) {
   let {answers, stop} = store.me();
   let proposing = false, error = '';
   const el = (tag, cls = '', text) => {
@@ -72,7 +72,7 @@ export function createJourney({root, download, store}) {
 
     const side = el('aside', 'journey-side');
     side.setAttribute('aria-label', t('你的树'));
-    side.append(tx('h2', 'side-title', '你的树'), trail(r.steps), renderTree({t, states: r.states, compact: true}), treeLegend(t));
+    side.append(tx('h2', 'side-title', '你的树'), trail(r.steps), renderTree({t, states: r.states, compact: true, community: community()}), treeLegend(t, {community: community().length > 0}));
     layout.append(main, side);
     return layout;
   }
@@ -80,7 +80,7 @@ export function createJourney({root, download, store}) {
   function proposalForm(q) {
     const form = el('form', 'proposal');
     form.noValidate = true;
-    form.append(tx('h2', '', '添加我的选项'), tx('p', 'micro', '它会挂在“{0}”下面，作为你添加的选项。', t(nodeById[q.at].title)));
+    form.append(tx('h2', '', '添加我的选项'), tx('p', 'micro', '它会挂在“{0}”下面。提交后由发起人审核，通过后会连同你的昵称出现在书中。', t(nodeById[q.at].title)));
     const name = tx('label', '', '你认为还有什么可能？');
     const input = el('input');
     input.id = 'proposal-label'; input.maxLength = 120; input.autocomplete = 'off';
@@ -136,7 +136,7 @@ export function createJourney({root, download, store}) {
     for (const line of lines) box.append(el('p', 'card-row mono', line));
     box.append(el('p', 'card-row card-dek', dek));
     if (ask) box.append(el('p', 'card-row card-ask', `${t('值得追问')}：${ask}`));
-    if (r.status === 'proposal') box.append(tx('p', 'card-row mono', '提交后，它会和其他人的选择一起被计数。'));
+    if (r.status === 'proposal') box.append(tx('p', 'card-row mono', '提交后，它会被计数；经发起人审核通过后，会连同你的昵称出现在书中。'));
     if (link) { const a = el('a', 'card-row card-link', `${t('阅读这个节点')} →`); a.href = link; box.append(a); }
     card.append(box);
     return card;
@@ -221,7 +221,7 @@ export function createJourney({root, download, store}) {
 
     const grid = el('div', 'result-grid');
     const treeBox = el('section', 'result-tree');
-    treeBox.append(tx('h2', 'section-title', '你的树'), renderTree({t, states: r.states, proposal: r.proposal}), treeLegend(t));
+    treeBox.append(tx('h2', 'section-title', '你的树'), renderTree({t, states: r.states, proposal: r.proposal, community: community()}), treeLegend(t, {community: community().length > 0}));
     const side = el('div', 'result-side');
     const list = el('section', 'answers');
     list.append(tx('h2', 'section-title', '你的回答'));
@@ -232,15 +232,15 @@ export function createJourney({root, download, store}) {
     };
     r.steps.forEach((s, i) => row(t(s.question.prompt), t(s.option.label), () => go(answers.slice(0, i))));
     if (r.status !== 'complete') row(t(r.current.prompt), r.status === 'uncertain' ? t('不确定') : r.proposal.label, () => go(answers));
-    const community = el('section', 'community');
+    const others = el('section', 'community');
     countsBox = el('div', 'counts');
-    community.append(tx('h2', 'section-title', '参与者怎么选'), countsBox, tx('p', 'micro', '选择人数不等于发生概率。每人只计最新的一份；以设备区分，不能保证一人一票。'));
+    others.append(tx('h2', 'section-title', '参与者怎么选'), countsBox, tx('p', 'micro', '选择人数不等于发生概率。每人只计最新的一份；以设备区分，不能保证一人一票。'));
     const actions = el('div', 'form-actions');
     actions.append(
       button('btn', `${t('导出我的树')} ↓`, () => download(journeyMarkdown(record(), t), 'book-of-endings-my-tree.md', 'text/markdown')),
       button('btn', t('重新开始'), () => go([]))
     );
-    side.append(list, submitSection(), community, actions, tx('p', 'micro', '你的选择保存在这台设备上，随时可以回来修改。'));
+    side.append(list, submitSection(), others, actions, tx('p', 'micro', '你的选择保存在这台设备上，随时可以回来修改。'));
     grid.append(treeBox, side);
     wrap.append(grid);
     return wrap;
