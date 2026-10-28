@@ -1,5 +1,7 @@
 # 终局之书 · The Book of Endings
 
+![终局之书 · The Book of Endings](docs/banner.png)
+
 我们比之前的任何时刻都更接近终局时刻。
 
 我们希望《终局之书》成为一场关于人类终局的讨论：一本永远无法写完、由所有人共同编写的书。
